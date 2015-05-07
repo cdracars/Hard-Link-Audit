@@ -5,11 +5,11 @@ tfile1=$(mktemp /tmp/auditSiteXXXXXX)
 tfile2=$(mktemp /tmp/auditSiteXXXXXX)
 tfile3=$(mktemp /tmp/auditSiteXXXXXX)
 tfile4=$(mktemp /tmp/auditSiteXXXXXX)
-to='kvanderw@gmail.com,cdracars@usao.edu'
-db='usaoedu'
+to='kvanderw@gmail.com,cdracars@gmail.com'
+db='drupal'
 
 # dump a current copy of the database
-mysqldump --skip-extended-insert $db > $tfile1
+mysqldump --skip-extended-insert -pvagrant $db > $tfile1
 
 # filter out any tables we don't really care about
 egrep "http://usao.edu|http://www.usao.edu|https://usao.edu|https://www.usao.edu" $tfile1 \
@@ -36,14 +36,14 @@ cat $tfile2 | sed 's/^.*`\(.*\)`.*$/\1/' | sort | uniq > $tfile4
 for t in $(cat $tfile4); do
 	echo "" >> $tfile3
 	echo "<h2>$t</h2>" >> $tfile3
-	mysql -He "describe $t" $db >> $tfile3
+	mysql -pvagrant -He "describe $t" $db >> $tfile3
 done
 
 # Abbreviate the attachement
 sed -i 's/^\(.\{100\}\).*/\1/' $tfile2
 
 # Send an email to Cody with the summary body and details attached.
-cat <<EOF | mutt -e "set content_type=text/html" -s "Weekly Hard Link Report (Legacy - D6)" $to -a $tfile2
+cat <<EOF | mutt -e "set content_type=text/html" -s "Weekly Hard Link Report (New - D7)" $to -a $tfile2
 <html>
 <p>Good Morning Cody!
 
